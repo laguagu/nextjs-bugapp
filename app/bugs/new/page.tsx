@@ -1,6 +1,7 @@
 "use client"
-import { Button, TextArea, TextField } from '@radix-ui/themes'
-import React from 'react'
+import { Button, TextField } from '@radix-ui/themes'
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
 
 export default function NewBugPage() {
   return (
@@ -8,7 +9,7 @@ export default function NewBugPage() {
         <TextField.Root>
             <TextField.Input placeholder='Otsikko' />
         </TextField.Root>
-        <TextArea placeholder='Kuvaus' />
+        <SimpleMDE placeholder='Kuvaus' />
         <Button>Lisää bugi</Button>
     </div>
   )
