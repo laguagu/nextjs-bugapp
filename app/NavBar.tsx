@@ -1,8 +1,14 @@
+"use client"
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 import { FaWorm } from "react-icons/fa6";
+import classNames from "classnames";
 
 export default function NavBar() {
+  const currenPath = usePathname();
+
+  
   const links = [
     { label: "Etusivu", href: "/" },
     { label: "Bugit", href: "/bugs" },
@@ -17,7 +23,11 @@ export default function NavBar() {
         {links.map((link) => (
           <Link
             key={link.href}
-            className="text-zinc-400 hover:text-zinc-800 transition-colors"
+            className={classNames({
+              "text-zinc-900": link.href === currenPath,
+              "text-zinc-500": link.href !== currenPath,
+              "hover:text-zinc-800 transition-colors": true
+            })}
             href={link.href}
           >
             {link.label}
