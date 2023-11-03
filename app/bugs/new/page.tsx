@@ -1,20 +1,22 @@
 "use client";
-import { Button, Callout, TextField } from "@radix-ui/themes";
+import { Button, Callout, TextField,Text } from "@radix-ui/themes";
 import SimpleMDE from "react-simplemde-editor";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import "easymde/dist/easymde.min.css";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { bugSchema } from "@/app/validationSchema";
+import { z } from "zod";
 
-interface bugForm {
-  title: string;
-  description: string;
-}
+type bugForm = z.infer<typeof bugSchema>
 
 export default function NewBugPage() {
   const router = useRouter();
-  const { register, control, handleSubmit } = useForm<bugForm>();
+  const { register, control, handleSubmit, formState: {errors} } = useForm<bugForm>({
+    resolver: zodResolver(bugSchema)
+  });
   const [error, setError] = useState("");
 
   return (
@@ -38,11 +40,13 @@ export default function NewBugPage() {
         <TextField.Root>
           <TextField.Input placeholder="Otsikko" {...register("title")} />
         </TextField.Root>
+        {errors.title && <Text color="red" as="p">{errors.title.message}</Text>}
         <Controller
           name="description"
           control={control}
           render={({ field }) => <SimpleMDE placeholder="Kuvaus" {...field} />}
         />
+        {errors.description && <Text color="red" as="p">{errors.description.message}</Text>}
         <Button>Lisää bugi</Button>
       </form>
     </div>
