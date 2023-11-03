@@ -1,5 +1,5 @@
 "use client";
-import { Button, Callout, TextField,Text } from "@radix-ui/themes";
+import { Button, Callout, TextField, Text } from "@radix-ui/themes";
 import SimpleMDE from "react-simplemde-editor";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
@@ -10,15 +10,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { bugSchema } from "@/app/validationSchema";
 import { z } from "zod";
 import ErrorMessage from "@/app/components/ErrorMessage";
+import Spinner from "@/app/components/Spinner";
 
-type bugForm = z.infer<typeof bugSchema>
+type bugForm = z.infer<typeof bugSchema>;
 
 export default function NewBugPage() {
   const router = useRouter();
-  const { register, control, handleSubmit, formState: {errors} } = useForm<bugForm>({
-    resolver: zodResolver(bugSchema)
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<bugForm>({
+    resolver: zodResolver(bugSchema),
   });
   const [error, setError] = useState("");
+  const [isSubmitting, setSubmitting] = useState(false);
 
   return (
     <div className="max-w-xl">
@@ -31,10 +38,12 @@ export default function NewBugPage() {
         className="space-y-3"
         onSubmit={handleSubmit(async (data) => {
           try {
+            setSubmitting(true);
             await axios.post("/api/bugs", data);
             router.push("/bugs");
           } catch (error) {
             setError("Error occured");
+            setSubmitting(false);
           }
         })}
       >
@@ -48,7 +57,9 @@ export default function NewBugPage() {
           render={({ field }) => <SimpleMDE placeholder="Kuvaus" {...field} />}
         />
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
-        <Button>Lisää bugi</Button>
+        <Button disabled={isSubmitting}>
+          Lisää bugi {isSubmitting && <Spinner />}
+        </Button>
       </form>
     </div>
   );
